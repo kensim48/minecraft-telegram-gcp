@@ -85,28 +85,31 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     # CallbackQueries need to be answered, even if no notification to the user is needed
     # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
+    await query.edit_message_text(text="⌛️ loading...")
     await query.answer()
-
-    if query.data == "start_server":
-        # Start server
-        reply_text="Starting server..."
-        start_instance(PROJECT_ID, ZONE, INSTANCE_NAME)
-    elif query.data == "stop_server":
-        # Stop server
-        reply_text = "Stopping server..."
-        stop_instance(PROJECT_ID, ZONE, INSTANCE_NAME)
-    elif query.data == "check_server":
-        if is_mc_server_online(SERVER_URL):
-            reply_text = "🟢 Server is online"
-        else:
-            reply_text = "🔴 Server is offline"
-    else:
-        print("skipped")
-        reply_text="Error"
     try:
-        await query.edit_message_text(text=reply_text, reply_markup=reply_markup)
-    except telegram.error.BadRequest:
-        pass
+        if query.data == "start_server":
+            # Start server
+            reply_text="Starting server..."
+            start_instance(PROJECT_ID, ZONE, INSTANCE_NAME)
+        elif query.data == "stop_server":
+            # Stop server
+            reply_text = "Stopping server..."
+            stop_instance(PROJECT_ID, ZONE, INSTANCE_NAME)
+        elif query.data == "check_server":
+            if is_mc_server_online(SERVER_URL):
+                reply_text = "🟢 Server is online"
+            else:
+                reply_text = "🔴 Server is offline"
+        else:
+            print("skipped")
+            reply_text="Error"
+        try:
+            await query.edit_message_text(text=reply_text, reply_markup=reply_markup)
+        except telegram.error.BadRequest:
+            pass
+    except:
+        await query.edit_message_text(text="Error, please use /start to try again")
 
 @restricted
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
