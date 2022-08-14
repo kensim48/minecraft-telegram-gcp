@@ -11,6 +11,8 @@ import logging
 
 from telegram import __version__ as TG_VER
 
+import telegram
+
 from start import start_instance
 from stop import stop_instance
 from connection_test import is_mc_server_online
@@ -101,8 +103,10 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     else:
         print("skipped")
         reply_text="Error"
-
-    await query.edit_message_text(text=reply_text, reply_markup=reply_markup)
+    try:
+        await query.edit_message_text(text=reply_text, reply_markup=reply_markup)
+    except telegram.error.BadRequest:
+        pass
 
 @restricted
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
