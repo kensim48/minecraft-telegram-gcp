@@ -74,7 +74,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Sends a message with three inline buttons attached."""
     
 
-    await update.message.reply_text("Please choose:", reply_markup=reply_markup)
+    await update.message.reply_text("Select a function below (responses take awhile, don't spam):", reply_markup=reply_markup)
 
 @restricted
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
