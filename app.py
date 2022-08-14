@@ -14,6 +14,7 @@ from telegram import __version__ as TG_VER
 from start import start_instance
 from stop import stop_instance
 from connection_test import is_mc_server_online
+from functools import wraps
 
 try:
     from telegram import __version_info__
@@ -38,12 +39,25 @@ TELEGRAM_API_KEY = ""
 
 SERVER_URL = ""
 
+LIST_OF_ADMINS = []
+
 
 # Enable logging
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
 )
 logger = logging.getLogger(__name__)
+
+
+def restricted(func):
+    @wraps(func)
+    async def wrapped(update, context, *args, **kwargs):
+        user_id = update.effective_user.id
+        if user_id not in LIST_OF_ADMINS:
+            print(f"Unauthorized access denied for {user_id}.")
+            return
+        return await func(update, context, *args, **kwargs)
+    return wrapped
 
 keyboard = [
         [
@@ -55,13 +69,14 @@ keyboard = [
 
 reply_markup = InlineKeyboardMarkup(keyboard)
 
+@restricted
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Sends a message with three inline buttons attached."""
     
 
     await update.message.reply_text("Please choose:", reply_markup=reply_markup)
 
-
+@restricted
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Parses the CallbackQuery and updates the message text."""
     query = update.callback_query
@@ -89,7 +104,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     await query.edit_message_text(text=reply_text, reply_markup=reply_markup)
 
-
+@restricted
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Displays info on how to use the bot."""
     await update.message.reply_text("Use /start to test this bot.")
