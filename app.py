@@ -96,7 +96,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             reply_text="Minecraft server has been started\n\nSelect a function below:"
             await context.bot.send_message(
                 chat_id=GROUP_CHAT_ID,
-                text="⛏️ {} has just started the Minecraft server!\n\n\n🗺️: http://ramshackle.fun:8123/\n🖥️:ramshackle.fun".format(user.first_name)
+                text="⛏️ {} has just started the Minecraft server!\n\n\n🗺️:  http://ramshackle.fun:8123/\n🖥️:  ramshackle.fun".format(user.first_name)
             )
             start_instance(PROJECT_ID, ZONE, INSTANCE_NAME)
         elif query.data == "stop_server":
