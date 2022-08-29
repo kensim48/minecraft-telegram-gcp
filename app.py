@@ -43,6 +43,8 @@ SERVER_URL = ""
 
 LIST_OF_ADMINS = []
 
+GROUP_CHAT_ID = 0
+
 
 # Enable logging
 logging.basicConfig(
@@ -63,10 +65,10 @@ def restricted(func):
 
 keyboard = [
         [
-            InlineKeyboardButton("Start Server", callback_data="start_server"),
-            InlineKeyboardButton("Stop Server", callback_data="stop_server"),
+            InlineKeyboardButton("🟩 Start Server", callback_data="start_server"),
+            InlineKeyboardButton("🟥 Stop Server", callback_data="stop_server"),
         ],
-        [InlineKeyboardButton("Check server status", callback_data="check_server")],
+        [InlineKeyboardButton("❓ Check server status", callback_data="check_server")],
     ]
 
 reply_markup = InlineKeyboardMarkup(keyboard)
@@ -76,7 +78,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Sends a message with three inline buttons attached."""
     
 
-    await update.message.reply_text("Select a function below (responses take awhile, don't spam):", reply_markup=reply_markup)
+    await update.message.reply_text("Select a function below:", reply_markup=reply_markup)
 
 @restricted
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -87,20 +89,29 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
     await query.edit_message_text(text="⌛️ loading...")
     await query.answer()
+    user = update.callback_query.from_user
     try:
         if query.data == "start_server":
             # Start server
-            reply_text="Starting server..."
+            reply_text="Minecraft server has been started\n\nSelect a function below:"
+            await context.bot.send_message(
+                chat_id=GROUP_CHAT_ID,
+                text="⛏️ {} has just started the Minecraft server!\n\n\n🗺️: http://ramshackle.fun:8123/\n🖥️:ramshackle.fun".format(user.first_name)
+            )
             start_instance(PROJECT_ID, ZONE, INSTANCE_NAME)
         elif query.data == "stop_server":
             # Stop server
-            reply_text = "Stopping server..."
+            reply_text = "Minecraft server has been stopped\n\n\nSelect a function below:"
+            await context.bot.send_message(
+                chat_id=GROUP_CHAT_ID,
+                text="🟥 {} has stopped the Minecraft server".format(user.first_name)
+            )
             stop_instance(PROJECT_ID, ZONE, INSTANCE_NAME)
         elif query.data == "check_server":
             if is_mc_server_online(SERVER_URL):
-                reply_text = "🟢 Server is online"
+                reply_text = "🟢 Server is online\n\n\nSelect a function below:"
             else:
-                reply_text = "🔴 Server is offline"
+                reply_text = "🔴 Server is offline\n\n\nSelect a function below:"
         else:
             print("skipped")
             reply_text="Error"
@@ -108,13 +119,13 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             await query.edit_message_text(text=reply_text, reply_markup=reply_markup)
         except telegram.error.BadRequest:
             pass
-    except:
-        await query.edit_message_text(text="Error, please use /start to try again")
+    except Exception as e:
+        await query.edit_message_text(text=str(e))
 
 @restricted
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Displays info on how to use the bot."""
-    await update.message.reply_text("Use /start to test this bot.")
+    await update.message.reply_text("Use /start")
 
 
 def main() -> None:
