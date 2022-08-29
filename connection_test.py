@@ -6,7 +6,7 @@ def is_mc_server_online(url:str) -> bool:
     headers = {}
     try:
         response = requests.request("GET", url, headers=headers, data=payload, timeout=5)
-    except requests.exceptions.ConnectionError as e:
+    except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError) as e:
         if "BadStatusLine" in str(e):
             return True
         else:
