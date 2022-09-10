@@ -6,7 +6,6 @@
 Basic example for a bot that uses inline keyboards. For an in-depth explanation, check out
  https://github.com/python-telegram-bot/python-telegram-bot/wiki/InlineKeyboard-Example.
 """
-from ast import In
 import logging
 
 from telegram import __version__ as TG_VER
@@ -15,6 +14,7 @@ import telegram
 
 from start import start_instance
 from stop import stop_instance
+from trigger_mode import change_mode
 from connection_test import is_mc_server_online
 from functools import wraps
 
@@ -45,6 +45,10 @@ LIST_OF_ADMINS = []
 
 GROUP_CHAT_ID = 0
 
+MAP_URL = ""
+SERVER_IP = ""
+
+BUCKETNAME = ""
 
 # Enable logging
 logging.basicConfig(
@@ -65,9 +69,10 @@ def restricted(func):
 
 keyboard = [
         [
-            InlineKeyboardButton("🟩 Start Server", callback_data="start_server"),
-            InlineKeyboardButton("🟥 Stop Server", callback_data="stop_server"),
+            InlineKeyboardButton("🟩 Start Java", callback_data="start_java"),
+            InlineKeyboardButton("🟩 Start Bedrock", callback_data="start_bedrock")
         ],
+        [InlineKeyboardButton("🟥 Stop Server", callback_data="stop_server")]
         [InlineKeyboardButton("❓ Check server status", callback_data="check_server")],
     ]
 
@@ -91,12 +96,22 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await query.answer()
     user = update.callback_query.from_user
     try:
-        if query.data == "start_server":
+        if query.data == "start_java":
             # Start server
-            reply_text="Minecraft server has been started\n\nSelect a function below:"
+            change_mode("java", BUCKETNAME)
+            reply_text="Minecraft Java server has been started\n\nSelect a function below:"
             await context.bot.send_message(
                 chat_id=GROUP_CHAT_ID,
-                text="⛏️ {} has just started the Minecraft server!\n\n\n🗺️:  http://ramshackle.fun:8123/\n🖥️:  ramshackle.fun".format(user.first_name)
+                text="⛏️ {} has just started the Java Minecraft server!\n\n\n🗺️:  {}\n🖥️: {}".format(user.first_name, MAP_URL, SERVER_IP)
+            )
+            start_instance(PROJECT_ID, ZONE, INSTANCE_NAME)
+        elif query.data == "start_bedrock":
+            # Start server
+            change_mode("bedrock", BUCKETNAME)
+            reply_text="Minecraft Bedrock server has been started\n\nSelect a function below:"
+            await context.bot.send_message(
+                chat_id=GROUP_CHAT_ID,
+                text="⛏️ {} has just started the Bedrock Minecraft server!\n\n\n🖥️: {}".format(user.first_name, SERVER_IP)
             )
             start_instance(PROJECT_ID, ZONE, INSTANCE_NAME)
         elif query.data == "stop_server":
