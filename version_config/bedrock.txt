@@ -1,1 +1,1 @@
-bedrock.txt
+bedrock
