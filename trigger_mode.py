@@ -16,4 +16,7 @@ def upload_file(file_stream, filename, bucketname):
     bucket = client.bucket(bucketname)
     blob = bucket.blob(filename)
     blob.upload_from_filename(file_stream)
+    metadata = {'Cache-Control': 'no-store'}
+    blob.metadata = metadata
+    blob.patch()
     # Ensure the file is publicly readable.
