@@ -12,6 +12,8 @@ from telegram import __version__ as TG_VER
 
 import telegram
 
+import requests
+
 from start import start_instance
 from stop import stop_instance
 from trigger_mode import change_mode
@@ -69,8 +71,8 @@ def restricted(func):
 
 keyboard = [
         [
-            InlineKeyboardButton("🟩 Start Java", callback_data="start_java"),
-            InlineKeyboardButton("🟩 Start Bedrock", callback_data="start_bedrock")
+            InlineKeyboardButton("☕ Start Java", callback_data="start_java"),
+            InlineKeyboardButton("🛏️ Start Bedrock", callback_data="start_bedrock")
         ],
         [InlineKeyboardButton("🟥 Stop Server", callback_data="stop_server")],
         [InlineKeyboardButton("❓ Check server status", callback_data="check_server")],
@@ -102,7 +104,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             reply_text="Minecraft Java server has been started\n\nSelect a function below:"
             await context.bot.send_message(
                 chat_id=GROUP_CHAT_ID,
-                text="⛏️ {} has just started the Java Minecraft server!\n\n\n🗺️:  {}\n🖥️: {}".format(user.first_name, MAP_URL, SERVER_IP)
+                text="⛏️ {} has just started the ☕ Java Minecraft server!\n\n\n🗺️:  {}\n🖥️: {}".format(user.first_name, MAP_URL, SERVER_IP)
             )
             start_instance(PROJECT_ID, ZONE, INSTANCE_NAME)
         elif query.data == "start_bedrock":
@@ -111,7 +113,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             reply_text="Minecraft Bedrock server has been started\n\nSelect a function below:"
             await context.bot.send_message(
                 chat_id=GROUP_CHAT_ID,
-                text="⛏️ {} has just started the Bedrock Minecraft server!\n\n\n🖥️: {}".format(user.first_name, SERVER_IP)
+                text="⛏️ {} has just started the 🛏️ Bedrock Minecraft server!\n\n\n🖥️: {}".format(user.first_name, SERVER_IP)
             )
             start_instance(PROJECT_ID, ZONE, INSTANCE_NAME)
         elif query.data == "stop_server":
@@ -123,10 +125,14 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             )
             stop_instance(PROJECT_ID, ZONE, INSTANCE_NAME)
         elif query.data == "check_server":
-            if is_mc_server_online(SERVER_URL):
-                reply_text = "🟢 Server is online\n\n\nSelect a function below:"
+            response = requests.request("GET", "https://storage.googleapis.com/{}/version.txt".format(BUCKETNAME))
+            if response.txt == "java":
+                if is_mc_server_online(SERVER_URL):
+                    reply_text = "🟢 Java Server is online\n\n\nSelect a function below:"
+                else:
+                    reply_text = "🔴 Java Server is offline\n\n\nSelect a function below:"
             else:
-                reply_text = "🔴 Server is offline\n\n\nSelect a function below:"
+                reply_text = "Server was last launched as Bedrock\nBedrock server online check is on the roadmap\n\n\nSelect a function below:"
         else:
             print("skipped")
             reply_text="Error"
