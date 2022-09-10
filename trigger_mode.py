@@ -2,7 +2,7 @@ import os
 from google.cloud import storage
 
 def change_mode(mode, bucketname):
-    upload_file("version.txt", "version_config/{}.txt".format(mode), bucketname)
+    upload_file("version_config/{}.txt".format(mode),"version.txt", bucketname)
 
 def upload_file(file_stream, filename, bucketname):
     """
