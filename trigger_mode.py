@@ -15,5 +15,5 @@ def upload_file(file_stream, filename, bucketname):
     client = storage.Client()
     bucket = client.bucket(bucketname)
     blob = bucket.blob(filename)
-    blob.upload_from_filename(file_stream)
+    blob.upload_from_filename(file_stream, cache_control="no-cache")
     # Ensure the file is publicly readable.
