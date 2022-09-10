@@ -17,4 +17,6 @@ def upload_file(file_stream, filename, bucketname):
     blob = bucket.blob(filename)
     blob.delete()
     blob.upload_from_filename(file_stream)
+    blob1 = bucket.blob(filename)
+    print(blob1.download_as_string())
     # Ensure the file is publicly readable.
