@@ -14,6 +14,6 @@ def upload_file(file_stream, filename, bucketname):
     # [START bookshelf_cloud_storage_client]
     client = storage.Client()
     bucket = client.bucket(bucketname)
-    blob = bucket.blob(filename, cache_control="no-cache")
+    blob = bucket.blob(filename)
     blob.upload_from_filename(file_stream)
     # Ensure the file is publicly readable.
