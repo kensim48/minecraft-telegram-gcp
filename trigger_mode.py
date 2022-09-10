@@ -16,6 +16,7 @@ def upload_file(file_stream, filename, bucketname):
     bucket = client.bucket(bucketname)
     blob = bucket.blob(filename)
     blob.delete()
+    print(blob.download_as_string())
     blob.upload_from_filename(file_stream)
     blob1 = bucket.blob(filename)
     print(blob1.download_as_string())
