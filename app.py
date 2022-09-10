@@ -72,7 +72,7 @@ keyboard = [
             InlineKeyboardButton("🟩 Start Java", callback_data="start_java"),
             InlineKeyboardButton("🟩 Start Bedrock", callback_data="start_bedrock")
         ],
-        [InlineKeyboardButton("🟥 Stop Server", callback_data="stop_server")]
+        [InlineKeyboardButton("🟥 Stop Server", callback_data="stop_server")],
         [InlineKeyboardButton("❓ Check server status", callback_data="check_server")],
     ]
 
